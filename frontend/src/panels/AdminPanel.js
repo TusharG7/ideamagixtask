@@ -1,17 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Instructor from "../components/Instructor";
-import { Link, useNavigate } from "react-router-dom";
-import { Col, Container, Row, Form, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { Col, Container, Row } from "react-bootstrap";
 import Course from "../components/Course";
+import AssignForm from "../components/AssignForm";
 
 const AdminPanel = () => {
-  const history = useNavigate();
   const [instructors, setInstructors] = useState([]);
   const [courses, setCourses] = useState([]);
-  const [selectedInstructor, setSelectedInstructor] = useState();
-  const [selectedCourse, setSelectedCourse] = useState();
-  const [date, setDate] = useState();
 
   useEffect(() => {
     axios
@@ -22,77 +19,31 @@ const AdminPanel = () => {
       .then((response) => setCourses(response.data));
   }, []);
 
-  async function assignLecture() {
-    console.log(selectedInstructor, selectedCourse, date);
-    try {
-      await axios.post("http://localhost:4000/admin/lectures", {
-        instructorId: selectedInstructor,
-        courseId: selectedCourse,
-        date: date,
-      });
-      history("/");
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   return (
     <Container>
-      <Row>
-        <Col md={4}>
-          <Link to={`/addInstructor`}>Add Instructor</Link>
+      <Row className="p-5">
+        <Col md={3}>
+          <div className="p-2 box rounded bg-dark text-center">
+            <Link className="text-white " to={`/addInstructor`}>
+              Add Instructor
+            </Link>
+          </div>
           {instructors.map((instructor) => {
             return <Instructor instructor={instructor} key={instructor.id} />;
           })}
         </Col>
         <Col md={3}>
-          <Link to={`/addCourse`}>Add Course</Link>
+          <div className="p-2 box rounded bg-dark text-center">
+            <Link className="text-white " to={`/addCourse`}>
+              Add Course
+            </Link>
+          </div>
           {courses.map((course) => {
             return <Course course={course} key={course.id} />;
           })}
         </Col>
-        <Col md={3}>
-          <Form.Group controlId="formBasicSelect" onSubmit={assignLecture}>
-            <Form.Label>Assign A Lecture</Form.Label>
-            <Form.Control
-              as="select"
-              placeholder="Select Instructor"
-              value={selectedInstructor}
-              onChange={(e) => {
-                console.log("instructorId: ", e.target.value);
-                setSelectedInstructor(Number(e.target.value));
-              }}
-            >
-              {instructors.map((i) => {
-                return <option value={i.id}>{i.name}</option>;
-              })}
-            </Form.Control>
-            <Form.Control
-              as="select"
-              placeholder="Select Course"
-              value={selectedCourse}
-              onChange={(e) => {
-                console.log("courseId:", e.target.value);
-                setSelectedCourse(Number(e.target.value));
-              }}
-            >
-              {courses.map((c) => {
-                return <option value={c.id}>{c.name}</option>;
-              })}
-            </Form.Control>
-            <Form.Label>Select Date</Form.Label>
-            <Form.Control
-              type="date"
-              name="dob"
-              placeholder="Select Date"
-              onChange={(e) => {
-                console.log(e.target.value);
-                setDate(e.target.value);
-              }}
-            />
-
-            <Button onClick={() => assignLecture()}>Assign</Button>
-          </Form.Group>
+        <Col md={5}>
+          <AssignForm instructors={instructors} courses={courses} />
         </Col>
       </Row>
     </Container>

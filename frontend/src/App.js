@@ -7,7 +7,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/instructorpanel" element={<InstructorPanel />} />
+        <Route path="/instructor/:id" element={<InstructorPanel />} />
         <Route
           path="/addInstructor"
           element={<AddForm instructor={true} course={false} />}
